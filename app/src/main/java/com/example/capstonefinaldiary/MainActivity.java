@@ -24,48 +24,40 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
-// 로그인 화면
+
 public class MainActivity extends AppCompatActivity {
 
     private ImageView loginBtn;
     private GoogleSignInClient client;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
-    private static final int RC_SIGN_IN = 123;
-
-
-
+    private static final int RC_SIGN_IN = 100;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);         //activity_main.xml 연동
+        setContentView(R.layout.activity_main);
 
         loginBtn = findViewById(R.id.login_btn);
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance("https://finalcapstone-749d2-default-rtdb.firebaseio.com/");
 
-
-        // 구글 로그인(id 토큰, 이메일) => 로그인 옵션
+        // 로그인(id 토큰, 이메일)
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-        // client 초기화 및 client 삭제(choose account)
+        // client 초기화
         client = GoogleSignIn.getClient(this, options);
         client.revokeAccess();
 
         // 로그인 버튼 클릭 시
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent i = client.getSignInIntent();
-                startActivityForResult(i, RC_SIGN_IN);   // 인증 코드
-
-
-            }
+        loginBtn.setOnClickListener((View.OnClickListener) view -> {
+            // Initialize sign in intent
+            Intent intent = client.getSignInIntent();
+            // Start activity for result
+            startActivityForResult(intent, RC_SIGN_IN);
         });
     }
 
@@ -93,22 +85,23 @@ public class MainActivity extends AppCompatActivity {
 
                             // 사용자가 있다면
                             assert user != null;
-
-                            // 사용자 데이터 가져 오기(파이어 베이스 데베에서 확인 가능)
-                            
-                            users1.setUserId(user.getUid());   // 계정(ID)
-                            users1.setUserName(user.getDisplayName());   // 이름
-                            users1.setProfilePic(user.getPhotoUrl().toString());  // 프로필 URL 문자열
+                            // 데이터 가져오기
+                            users1.setUserId(user.getUid());
+                            users1.setUserName(user.getDisplayName());
+                            users1.setProfilePic(user.getPhotoUrl().toString());
                             database.getReference().child("users").child(user.getUid()).setValue(users1);
-
-
-
+                            /**
                             // 로그인 성공 후 보여줄 데이터(이름, 사진)
-                            Intent intent = new Intent(MainActivity.this, CalenderActivity.class);  // Main -> calender 이동
+                            Intent intent = new Intent(MainActivity.this, HomeActivity.class);  // Main 이동
                             intent.putExtra("userId", user.getUid());
                             intent.putExtra("userName", user.getDisplayName());
                             intent.putExtra("ProfilePic", user.getPhotoUrl().toString());
                             startActivity(intent);
+                            */
+                            // 로그인 성공 시 CalenderActivity로 화면 이동
+                            Intent intent1 = new Intent(MainActivity.this, CalenderActivity.class);
+                            startActivity(intent1);
+
                         }
                         // 인증 실패 시
                         else {
@@ -125,8 +118,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
-
 }
