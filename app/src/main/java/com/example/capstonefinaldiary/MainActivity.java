@@ -102,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent1 = new Intent(MainActivity.this, CalenderActivity.class);
                             startActivity(intent1);
 
+                            // 로그인 시 자연스러운 이동 -> 화면 전환 애니메이션 추가
+                            overridePendingTransition(R.anim.enter_animation, R.anim.exit_animation);
+
                         }
                         // 인증 실패 시
                         else {

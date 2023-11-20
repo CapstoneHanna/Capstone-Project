@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+
+// flask 서버에서 플레이리스트 받기
 public class MusicAdapter extends RecyclerView.Adapter {
 
     //리사이클러뷰에 넣을 데이터 리스트

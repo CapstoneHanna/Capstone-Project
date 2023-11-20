@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -86,7 +85,7 @@ public class MenuActivity {
                 } else if (id == R.id.home) {
                     startNewActivity(CalenderActivity.class);
                 } else if (id == R.id.menu_statistics) {
-                    startNewActivity(StatisticsActivity.class);
+                    startNewActivity(FragmentAdapter.class);
                 } else if (id == R.id.menu_file) {
                     startNewActivity(AudioFileActivity.class);
                 } else if (id == R.id.menu_music) {

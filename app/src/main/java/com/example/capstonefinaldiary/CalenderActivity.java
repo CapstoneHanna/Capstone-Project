@@ -1,33 +1,25 @@
 package com.example.capstonefinaldiary;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.widget.Toolbar;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.capstonefinaldiary.Models.AudioFileInfo;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 public class CalenderActivity extends AppCompatActivity {
@@ -35,6 +27,8 @@ public class CalenderActivity extends AppCompatActivity {
     private String readDay = null;
     private CalendarView calendarView;
     private Button record;
+    private ImageView emotion_img;
+    private TextView diary;
     private MenuActivity menuActivity;
 
 
@@ -44,48 +38,26 @@ public class CalenderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calender);
 
         calendarView = findViewById(R.id.calendarView);
-        menuActivity = new MenuActivity(this); // MenuActivity 인스턴스 생성
+        menuActivity = new MenuActivity(this);
         record = findViewById(R.id.record);
-        /**
+        emotion_img = findViewById(R.id.emotion_img);
+        diary = findViewById(R.id.diary);
+
+        // 현재 날짜 가져오기
+        Calendar currentDate = Calendar.getInstance();
+        fetchAudioForDate(currentDate);
+
+
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Intent intent = new Intent(CalenderActivity.this, RecordActivity.class);
-                startActivity(intent);
-            }
-        });*/
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                // 날짜 형식을 맞추기 위해 month + 1 을 해줌, month는 0부터 시작하기 때문
-                String selectedDate = String.format(Locale.getDefault(), "%04d%02d%02d", year, month + 1, dayOfMonth);
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.set(year, month, dayOfMonth);
+                fetchAudioForDate(selectedDate);
 
-                // Firebase Realtime Database에서 해당 날짜의 녹음 파일 메타데이터 검색
-                DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("audios");
-                databaseRef.orderByChild("recordTime").startAt(selectedDate).endAt(selectedDate + "\uf8ff")
-                        .limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            // 최신 녹음 파일의 데이터스냅샷을 가져옴
-                            DataSnapshot latestSnapshot = dataSnapshot.getChildren().iterator().next();
-                            AudioFileInfo audioFile = latestSnapshot.getValue(AudioFileInfo.class);
-                            if (audioFile != null) {
-                                TextView diaryTextView = findViewById(R.id.diary);
-                                diaryTextView.setText(audioFile.getFilename()); // TextView에 최신 녹음 파일 이름 표시
-                            }
-                        } else {
-                            Toast.makeText(CalenderActivity.this, "No audio found for this date", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(CalenderActivity.this, "Error fetching data", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
+
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,4 +66,58 @@ public class CalenderActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchAudioForDate(Calendar calendar) {
+        String selectedDate = String.format(Locale.getDefault(), "%04d%02d%02d",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
+
+        DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("audios");
+        databaseRef.orderByChild("recordTime").startAt(selectedDate).endAt(selectedDate + "\uf8ff")
+                .limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            DataSnapshot latestSnapshot = dataSnapshot.getChildren().iterator().next();
+                            AudioFileInfo audioFile = latestSnapshot.getValue(AudioFileInfo.class);
+                            if (audioFile != null) {
+                                diary.setText(audioFile.getFilename());
+                                // 감정 데이터가 있는지 확인하고, 있다면 이미지를 업데이트합니다.
+                                EmotionImageUtils.setEmotionImage(emotion_img, audioFile.getEmotion());
+                            } else {
+                                // 감정 데이터가 없을 경우 기본 이미지를 설정합니다.
+                                emotion_img.setImageResource(R.drawable.default_emotion);
+                            }
+                        }else {
+                            diary.setText("녹음된 일기가 없습니다.");
+                            emotion_img.setImageResource(R.drawable.default_emotion); // 기본 이모지
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(CalenderActivity.this, "Error fetching data", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    /**
+     private void displayEmotionImage(Integer emotion) {
+     int imageResId = getEmotionImageResource(emotion);   // imageResId에는 파이어베이스에서 가져온 감정값
+     if (imageResId != 0) {                               // 감정값이 있는 경우
+     emotion_img.setImageResource(imageResId);
+     }
+     }
+     private int getEmotionImageResource(Integer emotion) {
+     switch (emotion) {
+     case 0: return R.drawable.angry;
+     case 1: return R.drawable.anxious;
+     case 2: return R.drawable.embarrassed;
+     case 3: return R.drawable.sad;
+     case 4: return R.drawable.happy;
+     case 5: return R.drawable.hurt;
+     case 6: return R.drawable.neutrality;
+     default: return R.drawable.default_emotion; // 감정 값이 없거나 인식할 수 없는 경우
+     }
+     } */
 }

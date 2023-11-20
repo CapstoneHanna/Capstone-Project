@@ -1,9 +1,7 @@
 package com.example.capstonefinaldiary;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -20,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.capstonefinaldiary.Models.AudioFileInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
@@ -37,25 +34,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
+// 녹음 페이지
 public class RecordActivity extends AppCompatActivity {
 
-    /**xml 변수*/
-    private ImageButton audioRecordImageBtn, audioStopImageBtn, voicelib;
+    //xml 변수
+    private ImageButton audioRecordImageBtn, audioStopImageBtn, voicelib;   // 오디오 녹음 시작, 저장 버튼
     private TextView audioRecordText, timeText;
-    private Button saveButton;
-    private Button reRecordButton;
+    private Button saveButton;     // 저장
+    private Button reRecordButton;  // 재녹음
     // 오디오 권한
     private String recordPermission = Manifest.permission.RECORD_AUDIO;
     private int PERMISSION_CODE = 21;
@@ -167,10 +161,10 @@ public class RecordActivity extends AppCompatActivity {
                 // Voicelib 버튼이 클릭되었을 때, AudioFileActivity로 전환
                 Intent intent = new Intent(RecordActivity.this, AudioFileActivity.class);
                 /**
-                if(recordedUris != null){
-                    // recordedUris 리스트를 Intent에 추가
-                    intent.putParcelableArrayListExtra("recordedUris", recordedUris);
-                }
+                 if(recordedUris != null){
+                 // recordedUris 리스트를 Intent에 추가
+                 intent.putParcelableArrayListExtra("recordedUris", recordedUris);
+                 }
                  */
                 startActivity(intent);
             }
@@ -502,4 +496,3 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 }
-

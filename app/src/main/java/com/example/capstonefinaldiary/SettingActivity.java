@@ -1,19 +1,14 @@
 package com.example.capstonefinaldiary;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -21,15 +16,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
+
+// 환경설정(메뉴) -> 로그아웃 기능(구글)
 public class SettingActivity extends AppCompatActivity {
 
     private GoogleSignInClient mSignInClient;
@@ -46,7 +37,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);
+        setContentView(R.layout.activity_setting);      // activity_setting.xml과 연동
 
         menuActivity = new MenuActivity(this) ; // MenuActivity 인스턴스 생성
 
@@ -54,13 +45,13 @@ public class SettingActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         currentUser = mFirebaseAuth.getCurrentUser();
 
-        ivProfile = findViewById(R.id.iv_Profile);
-        tv_Username = findViewById(R.id.tv_Username);
-        logout = findViewById(R.id.logout);
+        ivProfile = findViewById(R.id.iv_Profile);       // 프로필 이미지 뷰
+        tv_Username = findViewById(R.id.tv_Username);    // 사용자 이름
+        logout = findViewById(R.id.logout);              // 로그아웃
 
-        if (currentUser != null) {
-            String userName = currentUser.getDisplayName();
-            Uri profilePicUri = currentUser.getPhotoUrl();
+        if (currentUser != null) {                       // 사용자가 있다면
+            String userName = currentUser.getDisplayName();    // 현재 사용자의 이름 가져와서 userName에 할당
+            Uri profilePicUri = currentUser.getPhotoUrl();     // PhotoUrl 또한 ..
 
             if (userName != null) {
                 // 유저 이름 설정
@@ -72,17 +63,17 @@ public class SettingActivity extends AppCompatActivity {
                 Glide.with(this)
                         .load(profilePicUri)
                         .circleCrop()
-                        .into(ivProfile);
+                        .into(ivProfile);                    // 원형 이미지(Glide -> build.gradle에 설정)
             }
         }
 
         profile = findViewById(R.id.profile);
         profile_img = findViewById(R.id.profile_img);
 
-        profile.setOnClickListener(new View.OnClickListener() {
+        profile.setOnClickListener(new View.OnClickListener() {           // 프로필을 클릭하면
             @Override
             public void onClick(View view) {
-                if (currentUser != null) {
+                if (currentUser != null) {                             // 현재 사용자의 HomeActivity로 이동하기
                     Intent intent1 = new Intent(SettingActivity.this, HomeActivity.class);
                     startActivity(intent1);
                 }
@@ -110,7 +101,7 @@ public class SettingActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 // Firebase 로그아웃
                                 mFirebaseAuth.signOut();
-                                // MainActivity로 이동
+                                // MainActivity로 이동(로그인 맨 처음 화면)
                                 startActivity(new Intent(SettingActivity.this, MainActivity.class));
                                 finish();
                             }
