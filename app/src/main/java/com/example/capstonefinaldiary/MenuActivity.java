@@ -85,7 +85,7 @@ public class MenuActivity {
                 } else if (id == R.id.home) {
                     startNewActivity(CalenderActivity.class);
                 } else if (id == R.id.menu_statistics) {
-                    startNewActivity(FragmentAdapter.class);
+                    startNewActivity(StatisticsActivity.class);
                 } else if (id == R.id.menu_file) {
                     startNewActivity(AudioFileActivity.class);
                 } else if (id == R.id.menu_music) {
