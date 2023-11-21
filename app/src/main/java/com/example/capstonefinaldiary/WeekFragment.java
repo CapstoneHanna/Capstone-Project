@@ -35,6 +35,8 @@ public class WeekFragment extends Fragment {
     private PieChart weekPieChart;
     private TextView tv_week;
 
+    private String[] emotionNames = {"화남", "혐오", "당황", "행복", "슬픔", "상처", "중립"};
+
     public WeekFragment() {
         // Required empty public constructor
     }
@@ -109,7 +111,9 @@ public class WeekFragment extends Fragment {
         // 각 감정에 대한 엔트리를 추가합니다.
         for (int i = 0; i < emotionCounts.length; i++) {
             if (emotionCounts[i] > 0) { // 횟수가 0보다 큰 감정만 추가
-                entries.add(new PieEntry(emotionCounts[i], "Emotion " + i));
+                // 'emotionNames' 배열을 사용하여 감정 이름을 가져옵니다.
+                String emotionName = emotionNames[i];
+                entries.add(new PieEntry(emotionCounts[i], emotionName));
                 Log.d("StatisticsActivity", "Emotion " + i + " count: " + emotionCounts[i]);
                 // 가장 높은 감정 추출
                 if (emotionCounts[i] > maxEmotionCount) {
@@ -177,7 +181,7 @@ public class WeekFragment extends Fragment {
     private String getEmotionTextByIndex(int index) {
         // 인덱스에 따라 해당하는 감정의 이름을 반환합니다.
         // 이 부분은 애플리케이션에서 사용하는 감정 목록에 맞게 수정해야 합니다.
-        String[] emotions = {"행복", "슬픔", "분노", "놀람", "공포", "혐오", "중립"};
+        String[] emotions = {"화남", "혐오", "당황", "행복", "슬픔", "상처", "중립"};
         return (index >= 0 && index < emotions.length) ? emotions[index] : "알 수 없는 감정";
     }
 

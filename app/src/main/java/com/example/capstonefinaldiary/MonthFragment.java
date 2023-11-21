@@ -36,6 +36,8 @@ public class MonthFragment extends Fragment {
     View view;
     private PieChart monthPieChart;
     private TextView tv_month, month;
+
+    private String[] emotionNames = {"화남", "혐오", "당황", "행복", "슬픔", "상처", "중립"};
     private ImageButton btnPreviousMonth, btnNextMonth;
     private Calendar currentCalendar = Calendar.getInstance();
 
@@ -122,13 +124,13 @@ public class MonthFragment extends Fragment {
 
         for (int i = 0; i < emotionCounts.length; i++) {
             if (emotionCounts[i] > 0) {
-                entries.add(new PieEntry(emotionCounts[i], "Emotion " + i));
+                // 'emotionNames' 배열을 사용하여 감정 이름을 가져옵니다.
+                String emotionName = emotionNames[i];
+                entries.add(new PieEntry(emotionCounts[i], emotionName));
             }
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Emotion Distribution");
-
-        // 감정별 색상 배열 정의  -> 화남 가
+        // 감정별 색상 배열 정의
         int[] colors = new int[]{
                 Color.rgb(219, 107, 92),     // angry
                 Color.rgb(135, 137, 194),    // anxious
@@ -138,6 +140,12 @@ public class MonthFragment extends Fragment {
                 Color.rgb(199, 142, 192),   // hurt
                 Color.rgb(133, 164, 140)   // neutrality
         };
+
+        PieDataSet dataSet = new PieDataSet(entries, "Emotion Distribution");
+
+        // 색상 배열을 데이터셋에 설정
+        dataSet.setColors(colors);
+
 
 
         //dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
@@ -167,7 +175,7 @@ public class MonthFragment extends Fragment {
         }
     }
     private String getEmotionText(int emotionIndex) {
-        String[] emotions = {"행복", "슬픔", "분노", "놀람", "공포", "혐오", "중립"};
+        String[] emotions = {"화남", "혐오", "당황", "행복", "슬픔", "상처", "중립"};
         if (emotionIndex >= 0 && emotionIndex < emotions.length) {
             return emotions[emotionIndex];
         } else {

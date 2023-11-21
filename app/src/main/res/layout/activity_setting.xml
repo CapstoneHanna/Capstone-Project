@@ -25,14 +25,14 @@
         android:layout_height="135dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="100dp"
-        android:background="@drawable/border"
+        android:background="@drawable/background"
         android:gravity="center_vertical"
         android:paddingLeft="50dp"
         android:paddingRight="100dp"
         android:text="로그인이 필요합니다."
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.561"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
