@@ -1,10 +1,12 @@
 package com.example.capstonefinaldiary;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,7 +17,8 @@ import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +33,8 @@ import java.util.Locale;
 public class WeekFragment extends Fragment {
     View view;
     private PieChart weekPieChart;
+    private TextView tv_week;
+
     public WeekFragment() {
         // Required empty public constructor
     }
@@ -46,7 +51,10 @@ public class WeekFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.week_fragment, container, false);
         weekPieChart = view.findViewById(R.id.weekPieChart);
+        tv_week = view.findViewById(R.id.tv_week);
+
         fetchEmotionData(); // 데이터를 가져와 원그래프를 표시합니다.
+
         return view;
     }
     private void fetchEmotionData() {
@@ -95,22 +103,83 @@ public class WeekFragment extends Fragment {
 
     private void displayPieChart(int[] emotionCounts) {
         ArrayList<PieEntry> entries = new ArrayList<>();
+        int maxEmotionIndex = -1;
+        int maxEmotionCount = 0;
 
         // 각 감정에 대한 엔트리를 추가합니다.
         for (int i = 0; i < emotionCounts.length; i++) {
             if (emotionCounts[i] > 0) { // 횟수가 0보다 큰 감정만 추가
                 entries.add(new PieEntry(emotionCounts[i], "Emotion " + i));
                 Log.d("StatisticsActivity", "Emotion " + i + " count: " + emotionCounts[i]);
+                // 가장 높은 감정 추출
+                if (emotionCounts[i] > maxEmotionCount) {
+                    maxEmotionCount = emotionCounts[i];
+                    maxEmotionIndex = i;
+                }
             }
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Emotion Distribution");
+
+        // 감정별 색상 배열 정의  -> 화남 가
+        int[] colors = new int[]{
+                Color.rgb(219, 107, 92),     // angry
+                Color.rgb(135, 137, 194),    // anxious
+                Color.rgb(242, 180, 118),  // embarrassed
+                Color.rgb(235, 209, 137),   // happy
+                Color.rgb(41, 120, 143),    // sad
+                Color.rgb(199, 142, 192),   // hurt
+                Color.rgb(133, 164, 140)   // neutrality
+        };
+
+// 색상 배열을 데이터셋에 설정
+        dataSet.setColors(colors);
+
+
         // + 데이터셋 스타일링 (예: 색상 설정)
-        dataSet.setColors(ColorTemplate.COLORFUL_COLORS); // 색상 설정
+        //dataSet.setColors(ColorTemplate.COLORFUL_COLORS); // 색상 설정
         PieData data = new PieData(dataSet);
         weekPieChart.setData(data);
         weekPieChart.setDescription(null); // 설명 텍스트 제거
         weekPieChart.animateY(1400, Easing.EaseInOutQuad); // Y축 기준 애니메이션 적용
         weekPieChart.invalidate(); // 차트를 갱신합니다.
+
+        tv_view(maxEmotionIndex);
+
     }
+
+
+    private void tv_view(int emotionIndex){
+        // FirebaseUser 객체를 가져옵니다.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String emotionText = "Unknown"; // 기본 텍스트
+
+        if (currentUser != null) {
+            // 사용자 이름을 TextView에 설정합니다.
+            String userName = currentUser.getDisplayName();
+            userName = (userName != null && !userName.isEmpty()) ? userName : "사용자";
+
+
+            // 감정 인덱스에 따라 감정 텍스트를 설정할 수 있습니다.
+            // 예를 들면, emotionIndex가 0이면 "행복", 1이면 "슬픔" 등으로 매핑할 수 있습니다.
+            emotionText = getEmotionTextByIndex(emotionIndex);
+
+            // 텍스트뷰 업데이트
+            tv_week.setText(String.format("이번주 %s님의 감정은 \n%s입니다.", userName, emotionText));
+            /**
+             if (userName != null && !userName.isEmpty()) {
+             tv_week.setText("이번주 " + userName + "님의 감정은 \n00입니다.");
+             } else {
+             tv_week.setText("이번주 사용자님의 감정은 \n 입니다.");
+             }*/
+        }
+    }
+    private String getEmotionTextByIndex(int index) {
+        // 인덱스에 따라 해당하는 감정의 이름을 반환합니다.
+        // 이 부분은 애플리케이션에서 사용하는 감정 목록에 맞게 수정해야 합니다.
+        String[] emotions = {"행복", "슬픔", "분노", "놀람", "공포", "혐오", "중립"};
+        return (index >= 0 && index < emotions.length) ? emotions[index] : "알 수 없는 감정";
+    }
+
+
 }

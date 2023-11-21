@@ -3,8 +3,8 @@ package com.example.capstonefinaldiary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +26,7 @@ public class CalenderActivity extends AppCompatActivity {
 
     private String readDay = null;
     private CalendarView calendarView;
-    private Button record;
+    private ImageButton record;
     private ImageView emotion_img;
     private TextView diary;
     private MenuActivity menuActivity;

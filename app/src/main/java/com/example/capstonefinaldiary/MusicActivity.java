@@ -1,28 +1,14 @@
 package com.example.capstonefinaldiary;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.capstonefinaldiary.Models.AudioFileInfo;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +20,7 @@ public class MusicActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MusicAdapter musicAdapter;
     private List<PlaylistItem> playlistItems = new ArrayList<>();
+    private ImageView autonew;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +31,10 @@ public class MusicActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         musicAdapter = new MusicAdapter(this, playlistItems);
         recyclerView.setAdapter(musicAdapter);
-
+        autonew = findViewById(R.id.autonew);
 
         // 화면이 생성될 때 플레이리스트 데이터 가져오기
-        //fetchPlaylist();
+        fetchPlaylist();
         // Intent에서 플레이리스트 데이터를 가져옵니다.
         ArrayList<PlaylistItem> items = getIntent().getParcelableArrayListExtra("playlist");
         if (items != null) {
@@ -55,6 +42,13 @@ public class MusicActivity extends AppCompatActivity {
             playlistItems.addAll(items);
             musicAdapter.notifyDataSetChanged();
         }
+        //새로고침 버튼 클릭시 새로운 플레이리스트 추출
+        autonew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fetchPlaylist();
+            }
+        });
     }
 
     private void fetchPlaylist() {
