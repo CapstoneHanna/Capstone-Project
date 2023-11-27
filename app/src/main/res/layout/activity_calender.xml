@@ -42,6 +42,7 @@
             android:paddingTop="0dp"
             android:scaleType="centerInside"
             android:src="@drawable/record_btn"
+            android:background="#00FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"

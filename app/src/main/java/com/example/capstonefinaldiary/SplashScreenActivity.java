@@ -23,6 +23,6 @@ public class SplashScreenActivity extends Activity {
                 startActivity(intent);
                 finish();
             }
-        }, 3000);  // 3초 보여주기
+        }, 5000);  // 5초 보여주기 -> 짧아서 수정
     }
 }

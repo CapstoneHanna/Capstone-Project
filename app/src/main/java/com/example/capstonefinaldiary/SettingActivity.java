@@ -19,14 +19,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-
-// 환경설정(메뉴) -> 로그아웃 기능(구글)
 public class SettingActivity extends AppCompatActivity {
 
     private GoogleSignInClient mSignInClient;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser currentUser;
     private TextView logout;
+    private TextView app_evaluation;
     private MenuActivity menuActivity;
 
     ImageView ivProfile;
@@ -37,7 +36,7 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting);      // activity_setting.xml과 연동
+        setContentView(R.layout.activity_setting);
 
         menuActivity = new MenuActivity(this) ; // MenuActivity 인스턴스 생성
 
@@ -45,17 +44,18 @@ public class SettingActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         currentUser = mFirebaseAuth.getCurrentUser();
 
-        ivProfile = findViewById(R.id.iv_Profile);       // 프로필 이미지 뷰
-        tv_Username = findViewById(R.id.tv_Username);    // 사용자 이름
-        logout = findViewById(R.id.logout);              // 로그아웃
+        ivProfile = findViewById(R.id.iv_Profile);
+        tv_Username = findViewById(R.id.tv_Username);
+        app_evaluation = findViewById(R.id.app_evaluation);
+        logout = findViewById(R.id.logout);
 
-        if (currentUser != null) {                       // 사용자가 있다면
-            String userName = currentUser.getDisplayName();    // 현재 사용자의 이름 가져와서 userName에 할당
-            Uri profilePicUri = currentUser.getPhotoUrl();     // PhotoUrl 또한 ..
+        if (currentUser != null) {
+            String userName = currentUser.getDisplayName();
+            Uri profilePicUri = currentUser.getPhotoUrl();
 
             if (userName != null) {
                 // 유저 이름 설정
-                tv_Username.setText("UserName: " + userName);
+                tv_Username.setText(userName + "님");
             }
 
             if (profilePicUri != null) {
@@ -63,20 +63,31 @@ public class SettingActivity extends AppCompatActivity {
                 Glide.with(this)
                         .load(profilePicUri)
                         .circleCrop()
-                        .into(ivProfile);                    // 원형 이미지(Glide -> build.gradle에 설정)
+                        .into(ivProfile);
             }
         }
 
         profile = findViewById(R.id.profile);
         profile_img = findViewById(R.id.profile_img);
 
-        profile.setOnClickListener(new View.OnClickListener() {           // 프로필을 클릭하면
+        profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentUser != null) {                             // 현재 사용자의 HomeActivity로 이동하기
+                if (currentUser != null) {
                     Intent intent1 = new Intent(SettingActivity.this, HomeActivity.class);
                     startActivity(intent1);
                 }
+            }
+        });
+
+        app_evaluation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 구글 폼 URL로 교체해주세요.
+                String url = "https://docs.google.com/forms/d/e/1FAIpQLScqePJk4RxZM8ezlDS1j_IpwnY_CUv0VKEuy3VAxcbwkgXZDQ/viewform?usp=sf_link";
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
             }
         });
 
@@ -96,16 +107,16 @@ public class SettingActivity extends AppCompatActivity {
                 // 로그아웃 처리
                 if (currentUser != null) {
                     mSignInClient.signOut().addOnCompleteListener(SettingActivity.this,
-                        new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                // Firebase 로그아웃
-                                mFirebaseAuth.signOut();
-                                // MainActivity로 이동(로그인 맨 처음 화면)
-                                startActivity(new Intent(SettingActivity.this, MainActivity.class));
-                                finish();
-                            }
-                    });
+                            new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    // Firebase 로그아웃
+                                    mFirebaseAuth.signOut();
+                                    // MainActivity로 이동
+                                    startActivity(new Intent(SettingActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            });
                 }
 
             }

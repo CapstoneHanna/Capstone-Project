@@ -75,7 +75,7 @@ public class CalenderActivity extends AppCompatActivity {
 
         DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("audios");
         databaseRef.orderByChild("recordTime").startAt(selectedDate).endAt(selectedDate + "\uf8ff")
-                .limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                .limitToLast(1).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
@@ -101,23 +101,4 @@ public class CalenderActivity extends AppCompatActivity {
                     }
                 });
     }
-    /**
-     private void displayEmotionImage(Integer emotion) {
-     int imageResId = getEmotionImageResource(emotion);   // imageResId에는 파이어베이스에서 가져온 감정값
-     if (imageResId != 0) {                               // 감정값이 있는 경우
-     emotion_img.setImageResource(imageResId);
-     }
-     }
-     private int getEmotionImageResource(Integer emotion) {
-     switch (emotion) {
-     case 0: return R.drawable.angry;
-     case 1: return R.drawable.anxious;
-     case 2: return R.drawable.embarrassed;
-     case 3: return R.drawable.sad;
-     case 4: return R.drawable.happy;
-     case 5: return R.drawable.hurt;
-     case 6: return R.drawable.neutrality;
-     default: return R.drawable.default_emotion; // 감정 값이 없거나 인식할 수 없는 경우
-     }
-     } */
 }
