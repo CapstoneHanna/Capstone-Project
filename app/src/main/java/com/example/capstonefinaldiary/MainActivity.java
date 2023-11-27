@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
+// 로그인 화면
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);      // activity_main.xml과 연동
 
         loginBtn = findViewById(R.id.login_btn);
         auth = FirebaseAuth.getInstance();
+
+        // 실시간 데이터베이스 DB
         database = FirebaseDatabase.getInstance("https://finalcapstone-749d2-default-rtdb.firebaseio.com/");
 
         // 로그인(id 토큰, 이메일)
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                             // 사용자가 있다면
                             assert user != null;
-                            // 데이터 가져오기
+                            // 데이터 가져오기(ID, 이름, 프로필)
                             users1.setUserId(user.getUid());
                             users1.setUserName(user.getDisplayName());
                             users1.setProfilePic(user.getPhotoUrl().toString());
